@@ -43,11 +43,11 @@ public class CreateWorkbook {
 		      row1.createCell(2).setCellValue(createHelper.createRichTextString("George"));
 		      row1.createCell(3).setCellValue(createHelper.createRichTextString("February 22, 1732"));
 		      row1.createCell(4).setCellValue(createHelper.createRichTextString("0"));
-		      Cell cell   = row1.createCell(5);  
-	            cell.setCellValue("Powers of persuasion \nAbility to unify \nEmpowering others");  
-	            CellStyle cs = wb.createCellStyle();  
-	            cs.setWrapText(true);  
-	            cell.setCellStyle(cs);  
+		      Cell cell1   = row1.createCell(5);  
+	            cell1.setCellValue("Powers of persuasion \nAbility to unify \nEmpowering others");  
+	            CellStyle cs1 = wb.createCellStyle();  
+	            cs1.setWrapText(true);  
+	            cell1.setCellStyle(cs1);  
 	            row1.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));  
 	            sheet.autoSizeColumn(3); 
 	            
@@ -58,11 +58,11 @@ public class CreateWorkbook {
 			  row2.createCell(2).setCellValue(createHelper.createRichTextString("John"));
 			  row2.createCell(3).setCellValue(createHelper.createRichTextString("October 30, 1735"));
 			  row2.createCell(4).setCellValue(createHelper.createRichTextString("001"));
-			  Cell cell1   = row2.createCell(5);  
-		        cell1.setCellValue("A great communicator \nSuccessful lawyer");  
-		        CellStyle cs1 = wb.createCellStyle();  
-		        cs1.setWrapText(true);  
-		        cell1.setCellStyle(cs1);  
+			  Cell cell2   = row2.createCell(5);  
+		        cell2.setCellValue("A great communicator \nSuccessful lawyer");  
+		        CellStyle cs2 = wb.createCellStyle();  
+		        cs2.setWrapText(true);  
+		        cell2.setCellStyle(cs2);  
 		        row2.setHeightInPoints((2*sheet.getDefaultRowHeightInPoints()));  
 		        sheet.autoSizeColumn(2); 
 		      
