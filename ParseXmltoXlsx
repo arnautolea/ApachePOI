@@ -1,0 +1,138 @@
+package mvn.ApachePOI;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public class ParseXmltoXlsx {
+
+	
+	public static void main(String[] args) {
+        XSSFWorkbook wb = new XSSFWorkbook();
+        XSSFCreationHelper createHelper = wb.getCreationHelper();
+       
+        try {
+            File inputFile = new File("company123.xml");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(inputFile);
+            doc.getDocumentElement().normalize();
+           
+            NodeList dList = doc.getElementsByTagName("department");
+           
+            for (int d = 0; d < dList.getLength(); d++) {
+               Node dNode = dList.item(d);
+               if (dNode.getNodeType() == Node.ELEMENT_NODE) {
+ 
+ 		      Element dElement = (Element) dNode;
+ 		     
+ 		     String sheetname = (dElement.getAttribute("name") + dElement.getAttribute("depId"));
+ 		     XSSFSheet sheet = wb.createSheet(sheetname); 
+         
+           XSSFRow row = sheet.createRow(0);
+      		      createCell(wb, row, 0, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM, ("Emp ID"));
+      		      createCell(wb, row, 1, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM, ("Lastname"));
+      		      createCell(wb, row, 2, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM, ("Firstname"));
+      		      createCell(wb, row, 3, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM, ("Birthdate"));
+      		      createCell(wb, row, 4, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM, ("Manager ID"));
+      		      createCell(wb, row, 5, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM, ("Skills"));
+      		      makeBold(wb, sheet.getRow(0));
+ 		     
+ 		     NodeList eList = dElement.getElementsByTagName("employee");
+
+            for (int temp = 0; temp < eList.getLength(); temp++) {
+                
+            	Node nNode = eList.item(temp);
+                Row row1 = sheet.createRow(temp+1);
+
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+
+                  row1.createCell(0).setCellValue(createHelper.createRichTextString(eElement.getAttribute("empId")));
+  			      row1.createCell(1).setCellValue(createHelper.createRichTextString(eElement
+                          .getElementsByTagName("lastname")
+                          .item(0)
+                          .getTextContent()));
+  			      row1.createCell(2).setCellValue(createHelper.createRichTextString(eElement
+                          .getElementsByTagName("firstname")
+                          .item(0)
+                          .getTextContent()));
+  			      row1.createCell(3).setCellValue(createHelper.createRichTextString(eElement
+                          .getElementsByTagName("birthDate")
+                          .item(0)
+                          .getTextContent()));
+  			      row1.createCell(4).setCellValue(createHelper.createRichTextString(eElement
+                          .getElementsByTagName("managerId")
+                          .item(0)
+                          .getTextContent()));
+  			      Cell cell   = row1.createCell(5); 
+ 
+  			     		for (int s = 0; s < eElement.getElementsByTagName("skill").getLength(); s++) { 
+  			      			cell.setCellValue(eElement.getElementsByTagName("skill").item(s).getTextContent());
+  			      			CellStyle cs = wb.createCellStyle();  
+  			      			cs.setWrapText(true);  
+  			      			cell.setCellStyle(cs);  
+  			      			row1.setHeightInPoints((s*sheet.getDefaultRowHeightInPoints()));  
+  			      			sheet.autoSizeColumn(s);   
+ 
+  			      		}// close for after reading list of skills
+                }// close eElement if
+            }// for eList
+               }// close eList if
+            }//close eList for
+        }catch (Exception e1) {
+            e1.printStackTrace();
+         }
+ 		      try (OutputStream fileOut = new FileOutputStream("company123.xlsx")) {
+		         wb.write(fileOut);
+		         wb.close();
+		         System.out.println("File changed");
+		      
+		     	} catch (FileNotFoundException e2) {
+					e2.printStackTrace();
+		     	} catch (IOException e3) {
+					e3.printStackTrace();
+				}
+		   }
+		   private static void createCell(Workbook wb, Row row, int column, HorizontalAlignment halign, VerticalAlignment valign, String value) {
+		        Cell cell = row.createCell(column);
+		        cell.setCellValue(value);
+		        CellStyle cellStyle = wb.createCellStyle();
+		        cellStyle.setAlignment(halign);
+		        cellStyle.setVerticalAlignment(valign);
+		        cell.setCellStyle(cellStyle);
+		    }
+		   public static void makeBold(Workbook workbook, Row row)
+		   {
+		       for (int rowIndex = 0; rowIndex < row.getLastCellNum(); rowIndex++)
+		       {
+		           Cell cell = row.getCell(rowIndex);
+		           CellStyle cellStyle = cell.getCellStyle();
+		           XSSFFont font = (XSSFFont) workbook.createFont();
+		           font.setBold(true);
+		           cellStyle.setFont(font);
+		           cell.setCellStyle(cellStyle);
+		       }
+		   }
+}
